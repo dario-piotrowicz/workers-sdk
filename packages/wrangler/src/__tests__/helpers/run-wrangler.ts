@@ -6,7 +6,10 @@ import { normalizeSlashes, stripTimings } from "./mock-console";
  */
 export async function runWrangler(cmd?: string) {
 	try {
-		await main(cmd?.split(" ") ?? []);
+		const argv = (cmd?.match(/([^\s"']+|"[^"]*"|'[^']*')/g) ?? []).map(
+			(match) => `${match}`
+		);
+		await main(argv);
 	} catch (err) {
 		if (err instanceof Error) {
 			err.message = normalizeSlashes(stripTimings(err.message));
