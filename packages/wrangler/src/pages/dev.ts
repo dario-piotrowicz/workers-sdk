@@ -273,13 +273,17 @@ export const Handler = async ({
 
 	if (usingWorkerDirectory) {
 		const runBuild = async () => {
-			const bundleResult = await traverseAndBuildWorkerJSDirectory({
-				workerJSDirectory: workerScriptPath,
-				buildOutputDirectory: directory ?? ".",
-				nodejsCompat,
-			});
-			modules = bundleResult.modules;
-			scriptPath = bundleResult.resolvedEntryPointPath;
+			try {
+				const bundleResult = await traverseAndBuildWorkerJSDirectory({
+					workerJSDirectory: workerScriptPath,
+					buildOutputDirectory: directory ?? ".",
+					nodejsCompat,
+				});
+				modules = bundleResult.modules;
+				scriptPath = bundleResult.resolvedEntryPointPath;
+		} catch (e) {
+			logger.warn("Failed to bundle _worker.js/index.js.", e);
+		}
 		};
 
 		await runBuild().then(() => scriptReadyResolve());
